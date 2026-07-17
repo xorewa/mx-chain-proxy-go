@@ -160,3 +160,18 @@ func TestStatusMetrics_ConcurrentOperations(t *testing.T) {
 
 	wg.Wait()
 }
+
+func TestStatusMetrics_GetAllReturnsDetachedValues(t *testing.T) {
+	t.Parallel()
+
+	sm := NewStatusMetrics()
+	sm.AddRequestData("/network/config", false, time.Millisecond)
+
+	first := sm.GetAll()
+	first["/network/config"].NumRequests = 999
+	first["/network/config"].TotalResponseTime = 999 * time.Hour
+
+	second := sm.GetAll()
+	require.Equal(t, uint64(1), second["/network/config"].NumRequests)
+	require.Equal(t, time.Millisecond, second["/network/config"].TotalResponseTime)
+}

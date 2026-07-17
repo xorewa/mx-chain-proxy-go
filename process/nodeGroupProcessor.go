@@ -28,7 +28,7 @@ type NodeGroupProcessor struct {
 	proc                  Processor
 	cacher                HeartbeatCacheHandler
 	cacheValidityDuration time.Duration
-	cancelFunc            func()
+	lifecycle             backgroundTaskLifecycle
 }
 
 // NewNodeGroupProcessor creates a new instance of NodeGroupProcessor
@@ -200,15 +200,7 @@ func (ngp *NodeGroupProcessor) mapToResponse(responseMap map[string]data.PubKeyH
 
 // StartCacheUpdate will start the updating of the cache from the API at a given period
 func (ngp *NodeGroupProcessor) StartCacheUpdate() {
-	if ngp.cancelFunc != nil {
-		log.Error("NodeGroupProcessor - cache update already started")
-		return
-	}
-
-	var ctx context.Context
-	ctx, ngp.cancelFunc = context.WithCancel(context.Background())
-
-	runGuardedBackgroundTask("NodeGroupProcessor.StartCacheUpdate", func() {
+	started := ngp.lifecycle.start("NodeGroupProcessor.StartCacheUpdate", func(ctx context.Context) {
 		timer := time.NewTimer(ngp.cacheValidityDuration)
 		defer timer.Stop()
 
@@ -226,6 +218,9 @@ func (ngp *NodeGroupProcessor) StartCacheUpdate() {
 			}
 		}
 	})
+	if !started {
+		log.Error("NodeGroupProcessor - cache update already started")
+	}
 }
 
 func (ngp *NodeGroupProcessor) handleHeartbeatCacheUpdate() {
@@ -273,9 +268,7 @@ func (ngp *NodeGroupProcessor) GetWaitingEpochsLeftForPublicKey(publicKey string
 
 // Close will handle the closing of the cache update go routine
 func (ngp *NodeGroupProcessor) Close() error {
-	if ngp.cancelFunc != nil {
-		ngp.cancelFunc()
-	}
+	ngp.lifecycle.close()
 
 	return nil
 }

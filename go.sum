@@ -195,6 +195,8 @@ github.com/xorewa/mx-chain-logger-go v0.0.0-20260630161826-04c5818227ed h1:V5Eqf
 github.com/xorewa/mx-chain-logger-go v0.0.0-20260630161826-04c5818227ed/go.mod h1:tYYGwoIUG2TVmhyXI4Zp9s3VWzxqEUgBhjXAMx3vzVc=
 github.com/xorewa/mx-chain-storage-go v0.0.0-20260630162005-120dc6b184cb h1:HKsYBfc9dg4PJAvbTFCJdGEK7HhmyQSn+XTjEU4NGho=
 github.com/xorewa/mx-chain-storage-go v0.0.0-20260630162005-120dc6b184cb/go.mod h1:3pXUVHHeC8Ga8JwVKECW+6g8+65OI+PALQccQIe+qeE=
+github.com/xorewa/mx-chain-vm-common-go v0.0.0-20260717055012-49796c0ad51d h1:VdBbvArex6umpeoKCJVpvCWYu11dcEAPVsqp+/klKR8=
+github.com/xorewa/mx-chain-vm-common-go v0.0.0-20260717055012-49796c0ad51d/go.mod h1:NDMlraMf6XbQv7O5qYzVsWQ8dFkxEQprE0gw539n2Lk=
 github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.2.1/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 golang.org/x/arch v0.0.0-20210923205945-b76863e36670/go.mod h1:5om86z9Hs0C8fWVUuoMHwpExlXzs5Tkyp9hOrfG7pp8=

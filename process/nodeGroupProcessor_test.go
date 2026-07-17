@@ -442,6 +442,32 @@ func TestNodeGroupProcessor_CacheShouldUpdate(t *testing.T) {
 	assert.Equal(t, int32(3), atomic.LoadInt32(&numOfTimesHttpWasCalled))
 }
 
+func TestNodeGroupProcessor_CloseAllowsRestartWithoutOverlap(t *testing.T) {
+	t.Parallel()
+
+	var calls atomic.Int32
+	hp, err := process.NewNodeGroupProcessor(&mock.ProcessorStub{
+		GetShardIDsCalled: func() []uint32 { return []uint32{0} },
+		GetObserversCalled: func(_ uint32, _ data.ObserverDataAvailabilityType) ([]*data.NodeData, error) {
+			return []*data.NodeData{{ShardId: 0, Address: "observer"}}, nil
+		},
+		CallGetRestEndPointCalled: func(_ string, _ string, _ interface{}) (int, error) {
+			calls.Add(1)
+			return 0, nil
+		},
+	}, &mock.HeartbeatCacherMock{}, time.Hour)
+	require.NoError(t, err)
+
+	hp.StartCacheUpdate()
+	require.Eventually(t, func() bool { return calls.Load() == 1 }, time.Second, time.Millisecond)
+	require.NoError(t, hp.Close())
+	firstGenerationCalls := calls.Load()
+
+	hp.StartCacheUpdate()
+	require.Eventually(t, func() bool { return calls.Load() == firstGenerationCalls+1 }, time.Second, time.Millisecond)
+	require.NoError(t, hp.Close())
+}
+
 func TestNodeGroupProcessor_NoDataForAShardShouldNotUpdateCache(t *testing.T) {
 	t.Parallel()
 

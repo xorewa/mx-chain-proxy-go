@@ -69,7 +69,7 @@ type NodeStatusProcessor struct {
 	proc                  Processor
 	economicMetricsCacher GenericApiResponseCacheHandler
 	cacheValidityDuration time.Duration
-	cancelFunc            func()
+	lifecycle             backgroundTaskLifecycle
 }
 
 // NewNodeStatusProcessor creates a new instance of NodeStatusProcessor

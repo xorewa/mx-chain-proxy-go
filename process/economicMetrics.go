@@ -46,15 +46,7 @@ func (nsp *NodeStatusProcessor) getEconomicsDataMetrics(observers []*data.NodeDa
 
 // StartCacheUpdate will update the economic metrics cache at a given time
 func (nsp *NodeStatusProcessor) StartCacheUpdate() {
-	if nsp.cancelFunc != nil {
-		log.Error("NodeStatusProcessor - cache update already started")
-		return
-	}
-
-	var ctx context.Context
-	ctx, nsp.cancelFunc = context.WithCancel(context.Background())
-
-	runGuardedBackgroundTask("NodeStatusProcessor.StartCacheUpdate", func() {
+	started := nsp.lifecycle.start("NodeStatusProcessor.StartCacheUpdate", func(ctx context.Context) {
 		timer := time.NewTimer(nsp.cacheValidityDuration)
 		defer timer.Stop()
 
@@ -74,6 +66,9 @@ func (nsp *NodeStatusProcessor) StartCacheUpdate() {
 			}
 		}
 	})
+	if !started {
+		log.Error("NodeStatusProcessor - cache update already started")
+	}
 }
 
 func (nsp *NodeStatusProcessor) handleCacheUpdate(countConsecutiveFails *int) {
@@ -95,9 +90,7 @@ func (nsp *NodeStatusProcessor) handleCacheUpdate(countConsecutiveFails *int) {
 
 // Close will handle the closing of the cache update go routine
 func (nsp *NodeStatusProcessor) Close() error {
-	if nsp.cancelFunc != nil {
-		nsp.cancelFunc()
-	}
+	nsp.lifecycle.close()
 
 	return nil
 }
