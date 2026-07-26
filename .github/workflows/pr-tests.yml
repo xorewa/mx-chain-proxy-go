@@ -2,9 +2,9 @@ name: Tests
 
 on:
   push:
-    branches: [ master, rc/*, feat/* ]
+    branches: [ NewArc ]
   pull_request:
-    branches: [ master, rc/*, feat/* ]
+    branches: [ NewArc ]
 
 jobs:
   test:
@@ -21,7 +21,6 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Get dependencies
-        run: |
-          go get -v -t -d ./...
+        run: go mod download
       - name: Unit tests
         run: make test
