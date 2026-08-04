@@ -2,6 +2,7 @@ package process
 
 import (
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -93,7 +94,7 @@ func (scQueryProcessor *SCQueryProcessor) ExecuteQuery(query *data.SCQuery) (*vm
 		}
 
 		if responseHasExplicitError {
-			return nil, data.BlockInfo{}, fmt.Errorf(response.Error)
+			return nil, data.BlockInfo{}, errors.New(response.Error)
 		}
 
 		return nil, data.BlockInfo{}, err
