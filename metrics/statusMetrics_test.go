@@ -32,6 +32,19 @@ func TestStatusMetrics_GetMetricsForPrometheus(t *testing.T) {
 	t.Run("test fetching metrics for prometheus", testMetricsForPrometheus)
 }
 
+func TestStatusMetrics_GetAllReturnsIndependentSnapshot(t *testing.T) {
+	t.Parallel()
+
+	sm := NewStatusMetrics()
+	sm.AddRequestData("/network/config", false, time.Second)
+
+	snapshot := sm.GetAll()
+	snapshot["/network/config"].NumRequests = 100
+
+	current := sm.GetAll()
+	require.Equal(t, uint64(1), current["/network/config"].NumRequests)
+}
+
 func testFirstMetric(t *testing.T) {
 	t.Parallel()
 

@@ -65,7 +65,8 @@ func (sm *statusMetrics) GetAll() map[string]*data.EndpointMetrics {
 
 	newMap := make(map[string]*data.EndpointMetrics)
 	for key, value := range sm.endpointMetrics {
-		newMap[key] = value
+		valueCopy := *value
+		newMap[key] = &valueCopy
 	}
 
 	return newMap
